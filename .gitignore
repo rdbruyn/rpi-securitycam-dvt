@@ -71,3 +71,4 @@ fabric.properties
 security_cam/
 *.pdf
 *.swp
+*.sqlite3
