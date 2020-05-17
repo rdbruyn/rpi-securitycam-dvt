@@ -3,11 +3,11 @@ from abc import ABC, abstractmethod
 
 class Database(ABC):
     @abstractmethod
-    def save_metadata_to_db(self, *args, **kwargs):
+    def connect(self):
         pass
 
     @abstractmethod
-    def connect(self):
+    def save_footage(self, footage_stream, filename: str):
         pass
 
     @abstractmethod

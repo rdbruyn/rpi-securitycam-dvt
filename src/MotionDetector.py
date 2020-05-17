@@ -1,6 +1,6 @@
 import numpy as np
 from camera.MotionCamera import MotionCamera
-from Database import Database
+from database.Database import Database
 from runner.Runner import Runner
 
 import io
@@ -55,12 +55,12 @@ class MotionDetector:
         self.stop_signal = True
 
     def run(self):
-        self.runner.start()
-
-        on_cooldown = True
 
         image_pair = [None, self.camera.capture_next_image()]
+        last_motion_triggered = time.time()
+        self.database.connect()
 
+        self.runner.start()
         while self.runner.should_run():
             image_pair[0] = image_pair[1]
             image_pair[1] = self.camera.capture_next_image()
@@ -69,35 +69,43 @@ class MotionDetector:
                 self.print_movement_logs(self.active_ratio)
                 if motion_confirmed:
                     print('Motion confirmed')
-                    on_cooldown = True
-                elif on_cooldown:
-                    self.camera.wait_recording(2)
-                    on_cooldown = False
+                    last_motion_triggered = time.time()
+                elif time.time() - last_motion_triggered < 2:
+                    continue
                 else:
                     print('Movement stopped and cooldown period expired. Saving video file.')
                     self.camera.stop_recording()
+                    self.camera.stop_preview()
                     recorded_stream = self.camera.get_video_stream()
                     timestamp = time.strftime("%Y%m%d-%H %M %S")
-                    filename = '{}/{}.h264'.format(self.output_directory, timestamp)
+                    raw_filename = '{}/{}.h264'.format(self.output_directory, timestamp)
+                    mp4_filename = '{}/{}.mp4'.format(self.output_directory, timestamp)
                     output = io.open('{}/{}.h264'.format(self.output_directory, timestamp), 'wb')
                     output.write(recorded_stream.getvalue())
                     output.close()
-                    ffmpeg = FFmpeg().input(filename).output('/home/pi/Videos/test.mp4')
-                    t1 = time.time()
-                    loop = asyncio.get_event_loop()
-                    loop.run_until_complete(ffmpeg.execute())
-                    loop.close()
-                    t2 = time.time()
-                    print('ffmpeg time to encode: {}'.format(t2 - t1))
-                    time.sleep(1)
+                    self.convert_raw_footage_to_mp4(raw_filename, mp4_filename)
+                    print('Saving to database')
+                    mp4_stream = open(mp4_filename, 'rb')
+                    self.database.save_footage(mp4_stream, mp4_filename)
             else:
                 motion_confirmed = self.test_for_motion(image_pair[0], image_pair[1], self.inactive_ratio)
                 self.print_movement_logs(self.inactive_ratio)
                 if motion_confirmed:
                     self.camera.start_recording()
                     self.camera.start_preview()
-                    on_cooldown = True
+                    last_motion_triggered = time.time()
                 else:
                     continue
 
         self.camera.close()
+        self.database.close()
+
+    @staticmethod
+    def convert_raw_footage_to_mp4(raw_filename, mp4_filename):
+        ffmpeg = FFmpeg().input(raw_filename).output(mp4_filename)
+        t1 = time.time()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(ffmpeg.execute())
+        loop.close()
+        t2 = time.time()
+        print('ffmpeg time to encode: {}'.format(t2 - t1))
