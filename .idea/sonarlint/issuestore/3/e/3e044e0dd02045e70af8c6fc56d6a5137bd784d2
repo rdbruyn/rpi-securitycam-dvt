@@ -1,5 +1,0 @@
-
-=python:S125"Remove this commented out code.(ÇÑ—¤8òŠÙê™.
-¼python:S1542"Rename function "test_givenTwoImagesThatDifferWithMoreThanRatio_whenTestingForMovement_thenReturnTrue" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(èŠ›8øú¶ğ˜.
-Ãpython:S1542"Rename function "test_givenTwoImagesThatDifferWithLessThanRatio_whenTestingForMovement_thenReturnFalse" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(ş‘•Æüÿÿÿÿ8øú¶ğ˜.
-§python:S1542"‚Rename function "test_whenStopSignalIsGiven_thenMotionDetectorStopsRunning" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(ÁÉ¢õúÿÿÿÿ8»÷É™.
