@@ -33,8 +33,8 @@ class MotionDetector:
 
     def test_for_motion(self, image1: np.ndarray, image2: np.ndarray, ratio: float) -> bool:
         grayscale_map_vector = np.asarray([.2989, .587, .114])
-        gray1 = np.dot(image1[...,:3], grayscale_map_vector)
-        gray2 = np.dot(image2[...,:3], grayscale_map_vector)
+        gray1 = np.dot(image1[..., :3], grayscale_map_vector)
+        gray2 = np.dot(image2[..., :3], grayscale_map_vector)
         bool_image = np.abs(
             gray1.astype(np.int16) - gray2.astype(np.int16)
         ) > self.threshold
@@ -77,6 +77,7 @@ class MotionDetector:
                     self.camera.stop_recording()
                     self.camera.stop_preview()
                     recorded_stream = self.camera.get_video_stream()
+
                     timestamp = time.strftime("%Y%m%d-%H %M %S")
                     raw_filename = '{}/{}.h264'.format(self.output_directory, timestamp)
                     mp4_filename = '{}/{}.mp4'.format(self.output_directory, timestamp)
@@ -84,6 +85,7 @@ class MotionDetector:
                     output.write(recorded_stream.getvalue())
                     output.close()
                     self.convert_raw_footage_to_mp4(raw_filename, mp4_filename)
+
                     print('Saving to database')
                     mp4_stream = open(mp4_filename, 'rb')
                     self.database.save_footage(mp4_stream, mp4_filename)
