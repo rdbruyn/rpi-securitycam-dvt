@@ -86,7 +86,7 @@ class MotionDetector:
                     self.convert_raw_footage_to_mp4(raw_filename, mp4_filename)
                     print('Saving to database')
                     mp4_stream = open(mp4_filename, 'rb')
-                    self.database.save_footage(mp4_stream, mp4_filename)
+                    self.database.save_footage(mp4_stream, '{}.mp4'.format(timestamp))
             else:
                 motion_confirmed = self.test_for_motion(image_pair[0], image_pair[1], self.inactive_ratio)
                 self.print_movement_logs(self.inactive_ratio)
