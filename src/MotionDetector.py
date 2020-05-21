@@ -77,12 +77,14 @@ class MotionDetector:
                     self.camera.stop_recording()
                     self.camera.stop_preview()
                     recorded_stream = self.camera.get_video_stream()
+                    recorded_stream.seek(0)
 
-                    timestamp = time.strftime("%Y%m%d-%H:%M:%S")
-                    mp4_filename = '{}.mp4'.format(self.output_directory, timestamp)
+                    timestamp = time.strftime("%Y%m%d-%H%M%S")
+                    encoded_filename = '{}.h264'.format(timestamp)
 
                     print('Saving to database')
-                    self.database.save_footage(recorded_stream, mp4_filename)
+                    self.database.save_footage(recorded_stream, encoded_filename)
+                    image_pair[1] = self.camera.capture_next_image()
             else:
                 motion_confirmed = self.test_for_motion(image_pair[0], image_pair[1], self.inactive_ratio)
                 self.print_movement_logs(self.inactive_ratio)
