@@ -1,6 +1,7 @@
 from MotionDetector import MotionDetector
 from camera.RaspberryCamera import RaspberryCamera
 from runner.TimeRunner import TimeRunner
+from runner.AlwaysOnRunner import AlwaysOnRunner
 from database.S3database import S3database
 from time import sleep
 import argparse
@@ -15,11 +16,23 @@ if __name__ == '__main__':
         default=60
     )
 
+    parser.add_argument(
+        '-a',
+        '--always-on',
+        action='store_true',
+        help='Puts security camera on always-on mode. Will run until interrupted.'
+    )
+
     args = parser.parse_args()
 
     cam = RaspberryCamera()
     sleep(1)
-    runner = TimeRunner(args.time)
+
+    if args.always_on:
+        runner = AlwaysOnRunner()
+    else:
+        runner = TimeRunner(args.time)
+
     s3db = S3database()
     detector = MotionDetector(cam, s3db, runner)
     detector.run()
