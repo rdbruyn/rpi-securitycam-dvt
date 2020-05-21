@@ -15,7 +15,6 @@ class S3database(Database):
             'rdbruyn-test-bucket',
             filename,
             ExtraArgs={
-                'ACL': 'public-read',
                 'ContentType': 'video/mp4'
             }
         )

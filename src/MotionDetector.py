@@ -78,17 +78,11 @@ class MotionDetector:
                     self.camera.stop_preview()
                     recorded_stream = self.camera.get_video_stream()
 
-                    timestamp = time.strftime("%Y%m%d-%H %M %S")
-                    raw_filename = '{}/{}.h264'.format(self.output_directory, timestamp)
-                    mp4_filename = '{}/{}.mp4'.format(self.output_directory, timestamp)
-                    output = io.open('{}/{}.h264'.format(self.output_directory, timestamp), 'wb')
-                    output.write(recorded_stream.getvalue())
-                    output.close()
-                    self.convert_raw_footage_to_mp4(raw_filename, mp4_filename)
+                    timestamp = time.strftime("%Y%m%d-%H:%M:%S")
+                    mp4_filename = '{}.mp4'.format(self.output_directory, timestamp)
 
                     print('Saving to database')
-                    mp4_stream = open(mp4_filename, 'rb')
-                    self.database.save_footage(mp4_stream, '{}.mp4'.format(timestamp))
+                    self.database.save_footage(recorded_stream, mp4_filename)
             else:
                 motion_confirmed = self.test_for_motion(image_pair[0], image_pair[1], self.inactive_ratio)
                 self.print_movement_logs(self.inactive_ratio)
@@ -101,13 +95,3 @@ class MotionDetector:
 
         self.camera.close()
         self.database.close()
-
-    @staticmethod
-    def convert_raw_footage_to_mp4(raw_filename, mp4_filename):
-        ffmpeg = FFmpeg().input(raw_filename).output(mp4_filename)
-        t1 = time.time()
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(ffmpeg.execute())
-        loop.close()
-        t2 = time.time()
-        print('ffmpeg time to encode: {}'.format(t2 - t1))
