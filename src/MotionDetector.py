@@ -65,6 +65,7 @@ class MotionDetector:
             image_pair[0] = image_pair[1]
             image_pair[1] = self.camera.capture_next_image()
             if self.camera.is_recording:
+                self.camera.annotate()
                 motion_confirmed = self.test_for_motion(image_pair[0], image_pair[1], self.active_ratio)
                 self.print_movement_logs(self.active_ratio)
                 if motion_confirmed:

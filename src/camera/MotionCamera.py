@@ -42,5 +42,9 @@ class MotionCamera(ABC):
         pass
 
     @abstractmethod
+    def annotate(self):
+        pass
+
+    @abstractmethod
     def __init__(self, json_args=None):
         pass

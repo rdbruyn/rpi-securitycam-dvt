@@ -1,11 +1,15 @@
 import io
 import numpy as np
 from picamera import PiCamera
+import time
 
 from .MotionCamera import MotionCamera
 
 
 class RaspberryCamera(MotionCamera):
+    def annotate(self):
+        self.camera.annotate_text = time.strftime('%Y/%m/%d - %H:%M:%S')
+
     def capture_next_image(self) -> np.ndarray:
         img = np.empty((480, 640, 3), dtype=np.uint8)
         self.camera.capture(img, 'rgb', use_video_port=True)
