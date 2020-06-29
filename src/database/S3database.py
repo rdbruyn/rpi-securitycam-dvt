@@ -12,11 +12,8 @@ class S3database(Database):
     def save_footage(self, footage_stream, filename: str):
         self.s3_client.upload_fileobj(
             footage_stream,
-            'rdbruyn-test-bucket',
-            filename,
-            ExtraArgs={
-                'ContentType': 'video/mp4'
-            }
+            'input-bucket',
+            filename
         )
 
     def close(self):

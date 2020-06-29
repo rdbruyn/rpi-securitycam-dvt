@@ -46,7 +46,7 @@ class MotionDetector:
 
     def print_movement_logs(self, ratio):
         print(
-            'Difference ratio:  {}\n'
+            'Difference ratio: {}\n'
             'Tested for ratio: {}'
             .format(self.diff_ratio, ratio)
         )
